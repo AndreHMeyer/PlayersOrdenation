@@ -11,7 +11,7 @@ struct Player {
 	int score;
 };
 
-Player* gamePlayer = new Player[100];
+Player* gamePlayer = new Player[1000];
 
 string aleatoryName(int sizeName = 10) {
 
@@ -38,39 +38,56 @@ Player aleatoryPlayer() {
 
 void createPlayers() {
 
-	for (int i = 0; i < 100; i++) {
+	for (int i = 0; i < 1000; i++) {
 		gamePlayer[i] = aleatoryPlayer();
+	}
+}
+
+void showPlayers(){
+
+	for (int i = 0; i < 1000; i++) {
+		cout << i + 1 << "º - " << gamePlayer[i].name << ": " << gamePlayer[i].score << endl;
 	}
 }
 
 bool run = true;
 
-int insertionSort(Player* player, int size)
+void insertionSort(Player* player, int size)
 {
-	int i, j;
+    int i, key, j;
 	Player aux;
 
-	for (i = 1; i < size; i++) {
-		aux = player[i];
+    for (i = 1; i < size; i++)
+    {
+        aux = player[i];
+        j = i - 1;
 
-		for (j = i - 1; j >= 0 && player[j].name > aux.name; j--) {
+        while (j >= 0 && player[j].name > aux.name)
+		{
 			player[j + 1] = player[j];
+			j = j - 1;
 		}
 
 		player[j + 1] = aux;
-	}
 
-	return 0;
+    }
 }
 
 void showNamesByOrder() {
 
-	insertionSort(gamePlayer, 100);
+	insertionSort(gamePlayer, 1000);
 
-	for (int i = 0; i < 100; i++) {
+	for (int i = 0; i < 1000; i++) {
 		cout << i + 1 << "º - " << gamePlayer[i].name <<": "<<gamePlayer[i].score<< " \n";
 	}
 	cout << endl;
+}
+
+void swap(Player* a, Player* b)
+{
+	Player t = *a;
+	*a = *b;
+	*b = t;
 }
 
 int partition(Player* player, int left, int right) {
@@ -82,15 +99,11 @@ int partition(Player* player, int left, int right) {
 		if (player[j].score >= pivot) {
 			i++;
 
-			Player temp = player[i];
-			player[i] = player[j];
-			player[j] = temp;
+			swap(&player[i], &player[j]);
 		}
 	}
 
-	Player temp = player[i + 1];
-	player[i + 1] = player[right];
-	player[right] = temp;
+	swap(&player[i + 1], &player[right]);
 
 	return i + 1;
 }
@@ -107,65 +120,55 @@ void quickSort(Player* player, int left, int right) {
 
 void showTenBestPositions() {
 
-	quickSort(gamePlayer, 0, 99);
+	quickSort(gamePlayer, 0, 999);
 
 	for (int i = 0; i < 10; i++) {
 		cout << i + 1 << "º - " << gamePlayer[i].name << ": " << gamePlayer[i].score << endl;
 	}
 }
 
-int shellSort(Player* player, int size)
-{
-	int i, j, k;
-	Player aux;
+int shellSort(Player* player, int size) {
 
-	for (i = 0; i < size; i++) {
-		for (j = i; j < size; j++) {
-			if (player[i].score > player[j].score) {
-				aux = player[i];
-				player[i] = player[j];
-				player[j] = aux;
+    Player aux;
+
+    for (int gap = size / 2; gap > 0; gap /= 2){
+
+		for (int i = gap; i < size; i += 1){
+
+			Player temp = player[i];
+			int j;
+
+			for (j = i; j >= gap && player[j - gap].score < temp.score; j -= gap){
+				player[j] = player[j - gap];
 			}
+
+			player[j] = temp;
 		}
+
 	}
 
-	for (i = 0; i < size; i++) {
-		for (j = i; j < size; j++) {
-			if (player[i].score < player[j].score) {
-				aux = player[i];
-				player[i] = player[j];
-				player[j] = aux;
-			}
-		}
-	}
+	//Ordena os nomes alfabeticamente para posições iguais
+        for (int i = 0; i < size; i++) {
+            for (int j = i; j < size; j++) {
+                if (player[i].score == player[j].score) {
+                    for (int k = 0; k < size; k++) {
+                        if (player[i].name > player[j].name) {
+                            aux = player[i];
+                            player[i] = player[j];
+                            player[j] = aux;
+                        }
+                    }
+                }
+            }
+        }
 
-	for (i = 0; i < size; i++) {
-		for (j = i; j < size; j++) {
-			if (player[i].score == player[j].score) {
-				for (k = 0; k < size; k++) {
-					if (player[i].name > player[j].name) {
-						aux = player[i];
-						player[i] = player[j];
-						player[j] = aux;
-					}
-				}
-			}
-		}
-	}
+    return 0;
 
-	return 0;
 }
 
 void showHundredBestPositions() {
 
-	shellSort(gamePlayer, 100);
-
-	for (int i = 0; i < 100; i++) {
-		cout << i + 1 << "º - " << gamePlayer[i].name << ": " << gamePlayer[i].score << endl;
-	}
-}
-
-void showPlayers(){
+	shellSort(gamePlayer, 1000);
 
 	for (int i = 0; i < 100; i++) {
 		cout << i + 1 << "º - " << gamePlayer[i].name << ": " << gamePlayer[i].score << endl;
